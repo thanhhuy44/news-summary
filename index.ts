@@ -240,10 +240,6 @@ app.get("/summarize", async (req, res) => {
 
     const summary = await generateSummary(news.link!);
     if (!summary) {
-      await News.updateOne(
-        { articleId: news.articleId },
-        { $set: { summary: summary } },
-      );
       res.status(500).json({
         message: "Summary failed!",
       });
