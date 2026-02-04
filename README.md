@@ -1,0 +1,100 @@
+# News Crons
+
+A Node.js application that automatically fetches and summarizes news articles from different categories and sends them to a Telegram channel using AI-powered summaries.
+
+## Features
+
+- Fetches news articles from multiple categories (Sports, Technology, Health)
+- Uses Google's Gemini AI to generate concise summaries
+- Sends formatted news updates to a Telegram channel
+- RESTful API endpoints for manual triggering
+- Configurable number of news articles per category
+
+## Prerequisites
+
+- Node.js (v16 or higher)
+- Bun package manager
+- Telegram Bot Token
+- Google Gemini API Key
+
+## Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+PORT=3000
+MAX_NEWS=1
+TELEGRAM_CHAT_ID=your_chat_id
+TELEGRAM_BOT_TOKEN=your_bot_token
+CRON_SOURCE_DOMAIN=your_news_source_domain
+GEMINI_API_KEY=your_gemini_api_key
+GEMINI_MODEL=gemini-pro
+```
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
+cd news-crons
+```
+
+2. Install dependencies:
+
+```bash
+bun install
+```
+
+3. Build the project:
+
+```bash
+bun run build
+```
+
+## Usage
+
+### Development
+
+```bash
+bun run dev
+```
+
+### Production
+
+```bash
+bun run start
+```
+
+## API Endpoints
+
+- `GET /`: Health check endpoint
+- `GET /crons/:slug`: Trigger news fetching for a specific category
+  - Available categories: `the-thao`, `cong-nghe`, `suc-khoe`
+
+## Technologies Used
+
+- TypeScript
+- Express.js
+- Cheerio (for web scraping)
+- Google Gemini AI
+- Node Telegram Bot API
+- Axios
+- Dotenv
+
+## Project Structure
+
+```
+news-crons/
+├── configs/         # Configuration files
+├── dist/           # Compiled JavaScript files
+├── node_modules/   # Dependencies
+├── index.ts        # Main application file
+├── package.json    # Project configuration
+├── tsconfig.json   # TypeScript configuration
+└── vercel.json     # Vercel deployment configuration
+```
+
+## License
+
+Private - All rights reserved
