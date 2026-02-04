@@ -22,13 +22,13 @@ A Node.js application that automatically fetches and summarizes news articles fr
 Create a `.env` file in the root directory with the following variables:
 
 ```env
-PORT=3000
-MAX_NEWS=1
-TELEGRAM_CHAT_ID=your_chat_id
-TELEGRAM_BOT_TOKEN=your_bot_token
-CRON_SOURCE_DOMAIN=your_news_source_domain
-GEMINI_API_KEY=your_gemini_api_key
-GEMINI_MODEL=gemini-pro
+PORT=#
+CRON_SOURCE_DOMAIN=https://znews.vn
+MONGODB_URI=mongodb://localhost:27017/news-crons
+TELEGRAM_BOT_TOKEN=#
+TELEGRAM_CHAT_ID=#
+GEMINI_API_KEY=#
+GEMINI_MODEL=#
 ```
 
 ## Installation
@@ -40,13 +40,13 @@ git clone <repository-url>
 cd news-crons
 ```
 
-2. Install dependencies:
+1. Install dependencies:
 
 ```bash
 bun install
 ```
 
-3. Build the project:
+1. Build the project:
 
 ```bash
 bun run build
@@ -69,8 +69,9 @@ bun run start
 ## API Endpoints
 
 - `GET /`: Health check endpoint
-- `GET /crons/:slug`: Trigger news fetching for a specific category
+- `GET /scrap`: Trigger news fetching for a specific category
   - Available categories: `the-thao`, `cong-nghe`, `suc-khoe`
+- `GET /summarize`: Summary content of article
 
 ## Technologies Used
 
