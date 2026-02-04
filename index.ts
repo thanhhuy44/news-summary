@@ -232,6 +232,7 @@ app.get("/summarize", async (req, res) => {
     }
 
     const summary = await generateSummary(news.link!);
+    console.log("🚀 ~ summary:", summary);
     await News.updateOne({ articleId: news.articleId }, { $set: { summary } });
     res.json({
       message: "Summary generated successfully",
