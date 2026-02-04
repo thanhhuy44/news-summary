@@ -24,8 +24,6 @@ const connectDB = async () => {
     });
 };
 
-
-
 // constant
 const CATEGORIES = [
   "the-thao",
@@ -74,7 +72,7 @@ const sendMessage = async (
   photo: string,
   caption: string,
   link: string,
-  category: string
+  category: string,
 ) => {
   try {
     const threadId = THREAD_ID[category as keyof typeof THREAD_ID];
@@ -149,7 +147,7 @@ const fetchDetail = async (link: string) => {
 
 const scrapContent = async (category: string) => {
   const response: string = await request.get(
-    CRON_SOURCE_DOMAIN! + `/${category}.html`
+    CRON_SOURCE_DOMAIN! + `/${category}.html`,
   );
   const $ = cheerio.load(response);
   const newsList = $("#news-latest .article-list .article-item");
@@ -180,7 +178,7 @@ const scrapContent = async (category: string) => {
   const existingIds = new Set(existing.map((item) => item.articleId));
 
   const newNews = newsListData.filter(
-    (item) => item.articleId && !existingIds.has(item.articleId)
+    (item) => item.articleId && !existingIds.has(item.articleId),
   );
 
   if (newNews.length === 0) return;
@@ -193,7 +191,7 @@ const scrapContent = async (category: string) => {
     .catch((error) => {
       console.error(
         `Insert ${newNews.length} news to ${category} error:`,
-        error
+        error,
       );
     });
 };
@@ -213,7 +211,7 @@ app.get("/scrap", async (req, res) => {
         .catch((error) => {
           console.error(`Scrap content ${category} error:`, error);
         });
-    })
+    }),
   );
   res.send("Scrap content success!");
 });
@@ -241,8 +239,20 @@ app.get("/summarize", async (req, res) => {
     }
 
     const summary = await generateSummary(news.link!);
-    console.log("🚀 ~ summary:", summary);
-    await News.updateOne({ articleId: news.articleId }, { $set: { summary } });
+    if (!summary) {
+      await News.updateOne(
+        { articleId: news.articleId },
+        { $set: { summary: summary } },
+      );
+      res.status(500).json({
+        message: "Summary failed!",
+      });
+    }
+
+    await News.updateOne(
+      { articleId: news.articleId },
+      { $set: { summary: summary } },
+    );
     res.json({
       message: "Summary generated successfully",
       summary,
@@ -251,7 +261,7 @@ app.get("/summarize", async (req, res) => {
       news.thumbnail!,
       `<strong>${news.title}</strong>\n${summary ?? news.summary.trim()}`,
       news.link!,
-      news.category
+      news.category,
     );
     return;
   } catch (error) {
