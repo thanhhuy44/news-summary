@@ -131,8 +131,15 @@ const fetchDetail = async (link: string) => {
   try {
     const response: string = await request.get(link);
     const $ = cheerio.load(response);
+    // Clone article body and remove unwanted sections (if they exist)
+    const $articleBody = $(".the-article-body").clone();
+    $articleBody.find(".notebox").remove();
+    $articleBody.find("#innerarticle").remove();
+
     const content =
-      $(".the-article-body").text().trim() ?? $("body").text().trim();
+      $articleBody.text().trim() ||
+      $(".the-article-body").text().trim() ||
+      $("body").text().trim();
     return content;
   } catch (error) {
     console.error("🚀 ~ fetchDetail ~ error:", error);
