@@ -24,7 +24,7 @@ const connectDB = async () => {
     });
 };
 
-connectDB();
+
 
 // constant
 const CATEGORIES = [
@@ -203,6 +203,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/scrap", async (req, res) => {
+  await connectDB();
   Promise.all(
     CATEGORIES.map(async (category) => {
       await scrapContent(category)
@@ -220,6 +221,7 @@ app.get("/scrap", async (req, res) => {
 app.get("/summarize", async (req, res) => {
   try {
     // Find the oldest news item that still doesn't have a real summary
+    await connectDB();
     const news = await News.findOne({
       $or: [
         { summary: { $exists: false } },
