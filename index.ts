@@ -113,8 +113,6 @@ Chỉ sử dụng thông tin xuất hiện trong HTML, không suy đoán hay b�
 Dữ liệu đầu vào là nội dung RAW HTML sau:
 
 ${content}`;
-    console.log(GEMINI_API_KEY);
-
     const response = await gemini.models.generateContent({
       model: GEMINI_MODEL!,
       contents: prompt,
@@ -242,6 +240,11 @@ app.get("/summarize", async (req, res) => {
 
     const summary = await generateSummary(news.link!);
     if (!summary) {
+      await connectDB();
+      await News.updateOne(
+        { articleId: news.articleId },
+        { $set: { summary: "Failed to summary!" } },
+      );
       res.status(500).json({
         message: "Summary failed!",
       });
