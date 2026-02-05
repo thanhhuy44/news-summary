@@ -2,7 +2,6 @@
   "name": "news-crons",
   "module": "index.ts",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev": "nodemon index.ts",
     "build": "npx tsc --build",
@@ -12,13 +11,13 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@openrouter/sdk": "^0.5.1",
     "axios": "^1.9.0",
     "cheerio": "^1.0.0",
     "dotenv": "^16.5.0",
     "express": "^5.2.1",
     "mongoose": "^9.1.5",
     "node-telegram-bot-api": "^0.66.0",
+    "openai": "^6.17.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {

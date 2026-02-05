@@ -1,11 +1,11 @@
 import dotenv from "dotenv";
-import request from "./configs/request";
+import request from "./configs/request.js";
 import * as cheerio from "cheerio";
 import TelegramBot from "node-telegram-bot-api";
 import express from "express";
 import mongoose from "mongoose";
-import { News } from "./news.model";
-import { OpenRouter } from "@openrouter/sdk";
+import { News } from "./news.model.js";
+import OpenAI from "openai";
 
 dotenv.config({
   path: [".env.local", ".env"],
@@ -63,8 +63,9 @@ const CRON_SOURCE_DOMAIN = process.env.CRON_SOURCE_DOMAIN;
 
 const telegramBot = new TelegramBot(TELEGRAM_BOT_TOKEN!, {});
 
-const openRouter = new OpenRouter({
+const openRouter = new OpenAI({
   apiKey: process.env.OPEN_ROUTER_API_KEY!,
+  baseURL: "https://openrouter.ai/api/v1",
 });
 
 const sendMessage = async (
@@ -113,7 +114,7 @@ Dữ liệu đầu vào là nội dung RAW HTML sau:
 
 ${content}`;
 
-    const completion = await openRouter.chat.send({
+    const completion = await openRouter.chat.completions.create({
       model: process.env.OPEN_ROUTER_MODEL!,
       messages: [
         {
