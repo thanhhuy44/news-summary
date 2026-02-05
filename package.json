@@ -2,6 +2,7 @@
   "name": "news-crons",
   "module": "index.ts",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "nodemon index.ts",
     "build": "npx tsc --build",
