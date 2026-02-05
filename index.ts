@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
-import request from "./configs/request";
+import request from "./configs/request.js";
 import * as cheerio from "cheerio";
 import TelegramBot from "node-telegram-bot-api";
 import express from "express";
 import mongoose from "mongoose";
-import { News } from "./news.model";
+import { News } from "./news.model.js";
 import OpenAI from "openai";
 
 dotenv.config({
