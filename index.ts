@@ -2,10 +2,10 @@ import dotenv from "dotenv";
 import request from "./configs/request";
 import * as cheerio from "cheerio";
 import TelegramBot from "node-telegram-bot-api";
-import { GoogleGenAI } from "@google/genai";
 import express from "express";
 import mongoose from "mongoose";
 import { News } from "./news.model";
+import { OpenRouter } from "@openrouter/sdk";
 
 dotenv.config({
   path: [".env.local", ".env"],
@@ -60,19 +60,18 @@ const THREAD_ID = {
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CRON_SOURCE_DOMAIN = process.env.CRON_SOURCE_DOMAIN;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const GEMINI_MODEL = process.env.GEMINI_MODEL;
 
 const telegramBot = new TelegramBot(TELEGRAM_BOT_TOKEN!, {});
-const gemini = new GoogleGenAI({
-  apiKey: GEMINI_API_KEY!,
+
+const openRouter = new OpenRouter({
+  apiKey: process.env.OPEN_ROUTER_API_KEY!,
 });
 
 const sendMessage = async (
   photo: string,
   caption: string,
   link: string,
-  category: string,
+  category: string
 ) => {
   try {
     const threadId = THREAD_ID[category as keyof typeof THREAD_ID];
@@ -113,12 +112,18 @@ Chỉ sử dụng thông tin xuất hiện trong HTML, không suy đoán hay b�
 Dữ liệu đầu vào là nội dung RAW HTML sau:
 
 ${content}`;
-    const response = await gemini.models.generateContent({
-      model: GEMINI_MODEL!,
-      contents: prompt,
-      config: {},
+
+    const completion = await openRouter.chat.send({
+      model: process.env.OPEN_ROUTER_MODEL!,
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      stream: false,
     });
-    return response.text;
+    return completion.choices[0].message.content;
   } catch (error) {
     console.error("🚀 ~ generateSummary ~ error:", error);
     return null;
@@ -147,7 +152,7 @@ const fetchDetail = async (link: string) => {
 
 const scrapContent = async (category: string) => {
   const response: string = await request.get(
-    CRON_SOURCE_DOMAIN! + `/${category}.html`,
+    CRON_SOURCE_DOMAIN! + `/${category}.html`
   );
   const $ = cheerio.load(response);
   const newsList = $("#news-latest .article-list .article-item");
@@ -178,7 +183,7 @@ const scrapContent = async (category: string) => {
   const existingIds = new Set(existing.map((item) => item.articleId));
 
   const newNews = newsListData.filter(
-    (item) => item.articleId && !existingIds.has(item.articleId),
+    (item) => item.articleId && !existingIds.has(item.articleId)
   );
 
   if (newNews.length === 0) return;
@@ -191,7 +196,7 @@ const scrapContent = async (category: string) => {
     .catch((error) => {
       console.error(
         `Insert ${newNews.length} news to ${category} error:`,
-        error,
+        error
       );
     });
 };
@@ -211,7 +216,7 @@ app.get("/scrap", async (req, res) => {
         .catch((error) => {
           console.error(`Scrap content ${category} error:`, error);
         });
-    }),
+    })
   );
   res.send("Scrap content success!");
 });
@@ -243,7 +248,7 @@ app.get("/summarize", async (req, res) => {
       await connectDB();
       await News.updateOne(
         { articleId: news.articleId },
-        { $set: { summary: "Failed to summary!" } },
+        { $set: { summary: "Failed to summary!" } }
       );
       res.status(500).json({
         message: "Summary failed!",
@@ -252,7 +257,7 @@ app.get("/summarize", async (req, res) => {
 
     await News.updateOne(
       { articleId: news.articleId },
-      { $set: { summary: summary } },
+      { $set: { summary: summary } }
     );
     res.json({
       message: "Summary generated successfully",
@@ -262,7 +267,7 @@ app.get("/summarize", async (req, res) => {
       news.thumbnail!,
       `<strong>${news.title}</strong>\n${summary ?? news.summary.trim()}`,
       news.link!,
-      news.category,
+      news.category
     );
     return;
   } catch (error) {
