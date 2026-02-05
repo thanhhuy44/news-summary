@@ -2,8 +2,9 @@
   "name": "news-crons",
   "module": "index.ts",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "nodemon index.ts",
+    "dev": "nodemon --exec tsx index.ts",
     "build": "npx tsc --build",
     "start": "node dist/index.js"
   },
@@ -26,6 +27,7 @@
     "@types/mongoose": "^5.11.97",
     "@types/node-telegram-bot-api": "^0.64.8",
     "nodemon": "^3.1.10",
+    "tsx": "^4.19.2",
     "ts-node": "^10.9.2"
   }
 }
