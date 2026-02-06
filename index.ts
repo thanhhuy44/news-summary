@@ -100,20 +100,15 @@ const sendMessage = async (
 const generateSummary = async (link: string) => {
   try {
     const content = await fetchDetail(link);
-    let prompt = `Bạn là trợ lý tóm tắt nội dung báo chí.
-
-Nhiệm vụ của bạn là đọc một chuỗi RAW HTML của một trang báo và tự động trích xuất nội dung bài viết chính. Hãy bỏ qua toàn bộ phần không liên quan như script, style, quảng cáo, menu, footer, bình luận và nội dung gợi ý.
-
-Sau khi hiểu nội dung, hãy viết một đoạn tóm tắt ngắn gọn, mạch lạc, trung lập, phản ánh đúng ý chính của bài báo, bao gồm bối cảnh, vấn đề chính và kết luận hoặc tác động nếu có.
-
-Chỉ sử dụng thông tin xuất hiện trong HTML, không suy đoán hay bổ sung kiến thức bên ngoài. Không sao chép nguyên văn dài từ bài gốc.
-
-Độ dài kết quả không vượt quá 1024 ký tự và chỉ trả về văn bản thuần, không tiêu đề, không gạch đầu dòng, không định dạng đặc biệt.
-
-Dữ liệu đầu vào là nội dung RAW HTML sau:
-
-${content}`;
-
+    let prompt = `Bạn là hệ thống tóm tắt nội dung báo chí.
+Hãy đọc một chuỗi RAW HTML của một trang báo và trích xuất nội dung bài viết chính, bỏ qua script, style, quảng cáo, menu, footer, bình luận và các phần không liên quan.
+Sau khi hiểu nội dung, hãy viết duy nhất một đoạn văn tóm tắt, đi thẳng vào nội dung bài báo. Không sử dụng các câu mở đầu mang tính giới thiệu như “Đây là bài báo…”, “Bài viết nói về…”, “Nội dung của bài báo…”.
+Không thêm nhận xét cá nhân, không giải thích quá trình, không mô tả hành động của bạn. Không thêm ký tự xuống dòng ở đầu hoặc cuối nội dung trả về.
+Chỉ sử dụng thông tin có trong HTML, không suy đoán hay bổ sung kiến thức bên ngoài, không sao chép nguyên văn dài.
+Kết quả trả về phải là văn bản thuần, một đoạn duy nhất, tối đa 1024 ký tự.
+RAW HTML:
+${content}
+`;
     const completion = await openRouter.chat.completions.create({
       model: process.env.OPEN_ROUTER_MODEL!,
       messages: [
@@ -139,7 +134,6 @@ const fetchDetail = async (link: string) => {
     const $articleBody = $(".the-article-body").clone();
     $articleBody.find(".notebox").remove();
     $articleBody.find("#innerarticle").remove();
-
     const content =
       $articleBody.text().trim() ||
       $(".the-article-body").text().trim() ||
