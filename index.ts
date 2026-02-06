@@ -61,7 +61,9 @@ const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CRON_SOURCE_DOMAIN = process.env.CRON_SOURCE_DOMAIN;
 
-const telegramBot = new TelegramBot(TELEGRAM_BOT_TOKEN!, {});
+const telegramBot = new TelegramBot(TELEGRAM_BOT_TOKEN!, {
+  polling: false,
+});
 
 const openRouter = new OpenAI({
   apiKey: process.env.OPEN_ROUTER_API_KEY!,
