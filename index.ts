@@ -103,7 +103,7 @@ const generateSummary = async (link: string) => {
     let prompt = `Bạn là hệ thống tóm tắt nội dung báo chí.
 Hãy đọc một chuỗi RAW HTML của một trang báo và trích xuất nội dung bài viết chính, bỏ qua script, style, quảng cáo, menu, footer, bình luận và các phần không liên quan.
 Sau khi hiểu nội dung, hãy viết duy nhất một đoạn văn tóm tắt, đi thẳng vào nội dung bài báo. Không sử dụng các câu mở đầu mang tính giới thiệu như “Đây là bài báo…”, “Bài viết nói về…”, “Nội dung của bài báo…”.
-Không thêm nhận xét cá nhân, không giải thích quá trình, không mô tả hành động của bạn. Không thêm ký tự xuống dòng ở đầu hoặc cuối nội dung trả về.
+Không thêm nhận xét cá nhân, không giải thích quá trình, không mô tả hành động của bạn. Không thêm ký tự xuống dòng (\\n) ở đầu hoặc cuối nội dung trả về.
 Chỉ sử dụng thông tin có trong HTML, không suy đoán hay bổ sung kiến thức bên ngoài, không sao chép nguyên văn dài.
 Kết quả trả về phải là văn bản thuần, một đoạn duy nhất, tối đa 1024 ký tự.
 RAW HTML:
@@ -119,7 +119,9 @@ ${content}
       ],
       stream: false,
     });
-    return completion.choices[0].message.content;
+    return (completion.choices[0].message.content ?? "")
+      ?.trim()
+      .replace(/^\n+|\n+$/g, "");
   } catch (error) {
     console.error("🚀 ~ generateSummary ~ error:", error);
     return null;
