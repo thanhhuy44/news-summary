@@ -154,22 +154,19 @@ const scrapContent = async (category: string) => {
   const $ = cheerio.load(response);
   const newsList = $("#news-latest .article-list .article-item");
 
-  const newsListData = newsList
-    .get()
-    .reverse()
-    .map((element) => {
-      const $element = $(element);
-      return {
-        articleId: $element.attr("article-id"),
-        thumbnail: $element
-          .find(".article-thumbnail img")
-          .attr("data-src")
-          ?.trim(),
-        title: $element.find(".article-title").text().trim(),
-        link: $element.find(".article-thumbnail a").attr("href")?.trim(),
-        category,
-      };
-    });
+  const newsListData = newsList.get().map((element) => {
+    const $element = $(element);
+    return {
+      articleId: $element.attr("article-id"),
+      thumbnail: $element
+        .find(".article-thumbnail img")
+        .attr("data-src")
+        ?.trim(),
+      title: $element.find(".article-title").text().trim(),
+      link: $element.find(".article-thumbnail a").attr("href")?.trim(),
+      category,
+    };
+  });
   const articleIds = newsListData
     .map((item) => item.articleId)
     .filter((id): id is string => Boolean(id));
